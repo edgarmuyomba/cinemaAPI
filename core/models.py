@@ -35,7 +35,7 @@ class Season(models.Model):
         return f"{self.serie.name}.S{self.number}"
 
 def episode_file_path(instance, filename):
-    return f"series/{instance.season.serie.name}/{instance.season.number}"
+    return f"series/{instance.season.serie.name}/{instance.season.number}/{filename}"
 
 class Episode(models.Model):
     number = models.IntegerField()
