@@ -26,3 +26,15 @@ class SearchMovies(generics.ListAPIView):
         if query:
             results = all_records.filter(Q(name__icontains=query)|Q(machine_name__icontains=query))
         return results 
+    
+class SearchSeries(generics.ListAPIView):
+    queryset = Serie.objects.all()
+    serializer_class = SerieSerializer
+
+    def get_queryset(self):
+        all_records = super().get_queryset()
+        query = self.request.GET.get('query')
+        results = Serie.objects.none()
+        if query:
+            results = all_records.filter(Q(name__icontains=query)|Q(machine_name__icontains=query))
+        return results 
