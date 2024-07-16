@@ -7,6 +7,8 @@ from rest_framework.decorators import api_view
 from django.db.models import Q
 from rest_framework.response import Response
 from itertools import chain
+from django.shortcuts import get_object_or_404
+from django.http import StreamingHttpResponse
 
 class MovieDetails(generics.RetrieveAPIView):
     lookup_field = 'machine_name'
@@ -29,3 +31,11 @@ class Search(APIView):
             results = []
         response = MediaSerializer(results, many=True)
         return Response(response.data)
+    
+class DownloadMovie(APIView):
+    def get(self, request, *args, **kwargs):
+        machine_name = kwargs['machine_name']
+        movie = get_object_or_404(Movie, machine_name=machine_name)
+        response = StreamingHttpResponse(open(movie.file.path, 'rb'))
+        response['Content-Disposition'] = f'attachment; filename="{movie.name}.mp4"'
+        return response
