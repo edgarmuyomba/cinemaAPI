@@ -14,7 +14,7 @@ class MovieDetails(generics.RetrieveAPIView):
     serializer_class = MovieSerializer
 
 class SerieDetails(generics.RetrieveAPIView):
-    lookup_field = 'uuid'
+    lookup_field = 'machine_name'
     queryset = Serie.objects.all()
     serializer_class = SerieSerializer
 
