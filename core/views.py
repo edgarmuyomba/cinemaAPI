@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from rest_framework import generics 
 from rest_framework.views import APIView
-from .models import Serie, Movie
+from .models import Serie, Movie, Season, Episode
 from .serializers import MovieSerializer, SerieSerializer, MediaSerializer
 from rest_framework.decorators import api_view
 from django.db.models import Q
 from rest_framework.response import Response
 from itertools import chain
 from django.shortcuts import get_object_or_404
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, Http404
 
 class MovieDetails(generics.RetrieveAPIView):
     lookup_field = 'machine_name'
@@ -39,3 +39,26 @@ class DownloadMovie(APIView):
         response = StreamingHttpResponse(open(movie.file.path, 'rb'))
         response['Content-Disposition'] = f'attachment; filename="{movie.name}.mp4"'
         return response
+    
+class DownloadSerie(APIView):
+    def get(self, request, *args, **kwargs):
+        machine_name = kwargs['machine_name']
+        try:
+            season_no, episode_no = int(request.GET['season']), int(request.GET['episode'])
+        except:
+            raise Http404("Please provide a season and episode specification")
+        else:
+            serie = get_object_or_404(Serie, machine_name=machine_name)
+            try:
+                season = serie.seasons.get(number=season_no)
+            except Season.DoesNotExist:
+                raise Http404(f"{serie.name} Season {season_no} not yet available.")
+            else:
+                try:
+                    episode = season.episodes.get(number=episode_no)
+                except Episode.DoesNotExist:
+                    raise Http404(f"{serie.name} Season {season_no} Episode {episode_no} not yet available.")
+                else:
+                    response = StreamingHttpResponse(open(episode.file.path, 'rb'))
+                    response['Content-Disposition'] = f'attachment; name="{serie.name}"; filename="{episode.name}.mp4"; season="{season_no}"'
+                    return response
