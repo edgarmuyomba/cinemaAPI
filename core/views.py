@@ -36,7 +36,15 @@ class DownloadMovie(APIView):
     def get(self, request, *args, **kwargs):
         machine_name = kwargs['machine_name']
         movie = get_object_or_404(Movie, machine_name=machine_name)
-        response = StreamingHttpResponse(open(movie.file.path, 'rb'))
+
+        filepath = movie.file.path
+        response = StreamingHttpResponse(open(filepath, 'rb'))
+
+        with open(filepath, 'rb') as file:
+            file_data = file.read()
+
+        response['Content-Length'] = len(file_data)
+
         response['Content-Disposition'] = f'attachment; filename="{movie.name}.mp4"'
         return response
     
@@ -59,6 +67,13 @@ class DownloadSerie(APIView):
                 except Episode.DoesNotExist:
                     raise Http404(f"{serie.name} Season {season_no} Episode {episode_no} not yet available.")
                 else:
-                    response = StreamingHttpResponse(open(episode.file.path, 'rb'))
+                    filepath = episode.file.path
+                    response = StreamingHttpResponse(open(filepath, 'rb'))
                     response['Content-Disposition'] = f'attachment; name="{serie.name}"; filename="{episode.name}.mp4"; season="{season_no}"'
+
+                    with open(filepath, 'rb') as file:
+                        file_data = file.read()
+                    
+                    response['Content-Length'] = len(file_data)
+
                     return response
