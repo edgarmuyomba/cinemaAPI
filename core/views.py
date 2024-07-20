@@ -10,6 +10,14 @@ from itertools import chain
 from django.shortcuts import get_object_or_404
 from django.http import StreamingHttpResponse, Http404
 
+class Latest(APIView):
+    def get(self, request):
+        movies = Movie.objects.all()[:5]
+        series = Serie.objects.all()[:5]
+        all = list(chain(movies, series))
+        response = MediaSerializer(all, many=True)
+        return Response(response.data)
+
 class MovieDetails(generics.RetrieveAPIView):
     lookup_field = 'machine_name'
     queryset = Movie.objects.all()
