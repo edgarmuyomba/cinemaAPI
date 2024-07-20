@@ -14,7 +14,7 @@ class Latest(APIView):
     
     permission_classes = [IsAuthenticated]
 
-    def get(self):
+    def get(self, request):
         movies = Movie.objects.all()[:5]
         series = Serie.objects.all()[:5]
         all = list(chain(movies, series))
