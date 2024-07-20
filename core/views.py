@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import generics 
 from rest_framework.views import APIView
 from .models import Serie, Movie, Season, Episode
@@ -13,7 +12,10 @@ from accounts.authentication import CinemaAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 class Latest(APIView):
-    def get(self, request):
+    
+    permission_classes = [IsAuthenticated]
+
+    def get(self):
         movies = Movie.objects.all()[:5]
         series = Serie.objects.all()[:5]
         all = list(chain(movies, series))
@@ -24,15 +26,18 @@ class MovieDetails(generics.RetrieveAPIView):
     lookup_field = 'machine_name'
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-    authentication_classes = [CinemaAuthentication]
     permission_classes = [IsAuthenticated]
 
 class SerieDetails(generics.RetrieveAPIView):
     lookup_field = 'machine_name'
     queryset = Serie.objects.all()
     serializer_class = SerieSerializer
+    permission_classes = [IsAuthenticated]
 
 class Search(APIView):
+    
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         query = request.GET.get('query')
         if query:
@@ -45,6 +50,9 @@ class Search(APIView):
         return Response(response.data)
     
 class DownloadMovie(APIView):
+    
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         machine_name = kwargs['machine_name']
         movie = get_object_or_404(Movie, machine_name=machine_name)
@@ -61,6 +69,9 @@ class DownloadMovie(APIView):
         return response
     
 class DownloadSerie(APIView):
+    
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
         machine_name = kwargs['machine_name']
         try:

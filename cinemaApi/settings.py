@@ -134,3 +134,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles_cdn')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "accounts.Account"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "accounts.authentication.CinemaAuthentication",
+    ]
+}
