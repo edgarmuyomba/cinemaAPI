@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 class Signup(APIView):
+     
      permission_classes = [AllowAny]
 
      def post(self, request):

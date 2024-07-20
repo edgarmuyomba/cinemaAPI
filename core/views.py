@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from itertools import chain
 from django.shortcuts import get_object_or_404
 from django.http import StreamingHttpResponse, Http404
-from accounts.authentication import CinemaAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 class Latest(APIView):
